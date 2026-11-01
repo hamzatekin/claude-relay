@@ -25,6 +25,9 @@ services:
       - traefik.http.routers.relay.tls.certresolver=letsencrypt
       - traefik.http.routers.relay.middlewares=compress@file
       - traefik.http.services.relay.loadbalancer.server.port=8788
+      # pier's app-health check (hamzatekin/box ops/app-health.sh): 2xx with this keyword, every minute.
+      - pier.health.url=https://ai.hamzatekin.dev/health
+      - pier.health.keyword="ok":true
 
 networks:
   proxy:
