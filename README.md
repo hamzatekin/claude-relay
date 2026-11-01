@@ -129,7 +129,8 @@ Keep the token in the Worker. Never send it to the browser.
   `sudo deploy.sh relay rollback` goes back one version.
 - **Secrets** (runtime-only, never build args): `RELAY_TOKEN` (copy in `.relay-token`, 0600) and
   `CLAUDE_CODE_OAUTH_TOKEN`, in `/srv/apps/relay/.env` on the box (root, 0600). `.env` is
-  git-ignored: this repo is public.
+  git-ignored: this repo is public. After editing it, `sudo deploy.sh relay restart` applies it
+  in seconds, with no build.
 - **Tunables** (optional env): `DEFAULT_MODEL`, `DEFAULT_EFFORT`, `MAX_CONCURRENCY` (2),
   `MAX_QUEUE` (8), `TIMEOUT_MS` (180000), plus the `CHAT_*` ones above. Memory is capped at 2 GB in `compose.yaml`.
 - **Updating Claude Code:** it's installed at build time, so run `sudo deploy.sh relay --force`,
