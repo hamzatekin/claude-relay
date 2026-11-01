@@ -1,0 +1,31 @@
+# Deployed on the Hetzner box by deploy.sh from hamzatekin/box: every push to main is built, health
+# checked and started. Secrets live in .env next to this file on the box, never in this public repo.
+services:
+  relay:
+    build: .
+    image: relay:${TAG:-dev}
+    restart: unless-stopped
+    env_file: .env
+    mem_limit: 2g
+    # Traefik only routes to a healthy container. start_interval checks every 2 s while it starts, so
+    # a deploy is down for the start time, not a full interval.
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8788/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+      start_interval: 2s
+    networks: [default, proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.relay.rule=Host(`ai.hamzatekin.dev`)
+      - traefik.http.routers.relay.entrypoints=https
+      - traefik.http.routers.relay.tls.certresolver=letsencrypt
+      - traefik.http.routers.relay.middlewares=compress@file
+      - traefik.http.services.relay.loadbalancer.server.port=8788
+
+networks:
+  proxy:
+    external: true
