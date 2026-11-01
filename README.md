@@ -124,16 +124,16 @@ Keep the token in the Worker. Never send it to the browser.
 ## Operating it
 
 - **Deploys:** push to `main`. The Hetzner box checks it every minute and deploys it with
-  `deploy.sh` from `hamzatekin/box` (`compose.yaml` here: build, health check, restart; Telegram
-  reports each deploy). `sudo deploy.sh relay --force` redeploys without a push, and
-  `sudo deploy.sh relay rollback` goes back one version.
+  pier (`hamzatekin/pier`), using `compose.yaml` here: build, health check, restart. Telegram
+  reports each deploy. `sudo pier relay --force` redeploys without a push, and
+  `sudo pier relay rollback` goes back one version.
 - **Secrets** (runtime-only, never build args): `RELAY_TOKEN` (copy in `.relay-token`, 0600) and
   `CLAUDE_CODE_OAUTH_TOKEN`, in `/srv/apps/relay/.env` on the box (root, 0600). `.env` is
-  git-ignored: this repo is public. After editing it, `sudo deploy.sh relay restart` applies it
+  git-ignored: this repo is public. After editing it, `sudo pier relay restart` applies it
   in seconds, with no build.
 - **Tunables** (optional env): `DEFAULT_MODEL`, `DEFAULT_EFFORT`, `MAX_CONCURRENCY` (2),
   `MAX_QUEUE` (8), `TIMEOUT_MS` (180000), plus the `CHAT_*` ones above. Memory is capped at 2 GB in `compose.yaml`.
-- **Updating Claude Code:** it's installed at build time, so run `sudo deploy.sh relay --force`,
+- **Updating Claude Code:** it's installed at build time, so run `sudo pier relay --force`,
   which rebuilds the running version without the build cache.
 - **Local test build:** `docker build -t claude-relay:test .`
 - **Logs:** one line per `/v1/complete` request or chat turn (model, sizes, tokens, timing;

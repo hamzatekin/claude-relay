@@ -1,4 +1,4 @@
-# Deployed on the Hetzner box by deploy.sh from hamzatekin/box: every push to main is built, health
+# Deployed on the Hetzner box by pier (hamzatekin/pier): every push to main is built, health
 # checked and started. Secrets live in .env next to this file on the box, never in this public repo.
 services:
   relay:
