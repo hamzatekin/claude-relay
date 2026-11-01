@@ -123,15 +123,18 @@ Keep the token in the Worker. Never send it to the browser.
 
 ## Operating it
 
-- **Deploys:** push to `main`. Coolify (app id **8**, project `claude-relay`) builds the
-  `Dockerfile` from this repo via the `avvos-hels` GitHub App webhook. Don't edit the build in
-  the Coolify UI; change it here. `~/coolify-deploy.sh relay` triggers a deploy without a push.
-- **Secrets** (Coolify env, runtime-only, never build args): `RELAY_TOKEN` (copy in
-  `.relay-token`, 0600) and `CLAUDE_CODE_OAUTH_TOKEN`.
+- **Deploys:** push to `main`. The Hetzner box checks it every minute and deploys it with
+  `deploy.sh` from `hamzatekin/box` (`compose.yaml` here: build, health check, restart; Telegram
+  reports each deploy). `sudo deploy.sh relay --force` redeploys without a push, and
+  `sudo deploy.sh relay rollback` goes back one version.
+- **Secrets** (runtime-only, never build args): `RELAY_TOKEN` (copy in `.relay-token`, 0600) and
+  `CLAUDE_CODE_OAUTH_TOKEN`, in `/srv/apps/relay/.env` on the box (root, 0600). `.env` is
+  git-ignored: this repo is public.
 - **Tunables** (optional env): `DEFAULT_MODEL`, `DEFAULT_EFFORT`, `MAX_CONCURRENCY` (2),
-  `MAX_QUEUE` (8), `TIMEOUT_MS` (180000), plus the `CHAT_*` ones above. Memory is capped at 2 GB in Coolify.
-- **Updating Claude Code:** it's installed at build time, so run `~/coolify-deploy.sh relay --force`.
+  `MAX_QUEUE` (8), `TIMEOUT_MS` (180000), plus the `CHAT_*` ones above. Memory is capped at 2 GB in `compose.yaml`.
+- **Updating Claude Code:** it's installed at build time, so run `sudo deploy.sh relay --force`,
+  which rebuilds the running version without the build cache.
 - **Local test build:** `docker build -t claude-relay:test .`
 - **Logs:** one line per `/v1/complete` request or chat turn (model, sizes, tokens, timing;
   never content), plus chat lifecycle lines (started, idle-expired, evicted, died, turn cap):
-  `docker logs $(docker ps -qf name=9tpmhecw3ano37mbdbhrxfdn)`
+  `docker logs relay-relay-1`
